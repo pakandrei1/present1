@@ -269,7 +269,7 @@
 <section id="boxplots" class="slide level2">
 <h2>Boxplots</h2>
 <p>Removing outliers (Anything beyond 1.5*IQR)</p>
-<div id="ab91686c" class="cell" data-execution_count="2">
+<div id="1da92b64" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a><span class="co"># Boxplot of dataset before and after removing outliers</span></span>
 <span id="cb1-2"><a href=""></a>s1 <span class="op">=</span> pd.Series(dataset[<span class="st">'households'</span>],</span>
 <span id="cb1-3"><a href=""></a>               name<span class="op">=</span><span class="st">'Before'</span>)</span>
@@ -305,7 +305,7 @@
 </div>
 </div></section><section id="histogram-normal-pdf" class="slide level2">
 <h2>Histogram &amp; Normal PDF</h2>
-<div id="8315bcf8" class="cell" data-execution_count="3">
+<div id="1a2aed73" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a><span class="co"># pdf and histplot</span></span>
 <span id="cb2-2"><a href=""></a>s1 <span class="op">=</span> dataset[<span class="st">'households'</span>]</span>
 <span id="cb2-3"><a href=""></a><span class="bu">vars</span> <span class="op">=</span> s1.describe()</span>
@@ -329,7 +329,7 @@
 </section>
 <section id="cdf" class="slide level2">
 <h2>CDF</h2>
-<div id="304d10a7" class="cell" data-execution_count="4">
+<div id="6c90954c" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="co"># cdf</span></span>
 <span id="cb3-2"><a href=""></a>x, counts <span class="op">=</span> np.unique(s1, return_counts<span class="op">=</span><span class="va">True</span>, <span class="bu">sorted</span><span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb3-3"><a href=""></a>events <span class="op">=</span> np.cumsum(counts)</span>
@@ -351,7 +351,7 @@
 <section id="conditional-probability" class="slide level2">
 <h2>Conditional Probability</h2>
 <p><span class="math display">\[P\left(B | A\right) = P\left(A \cap B\right) | P\left(A\right)\]</span> <span class="math display">\[A = \text{population} &gt; 3000\]</span> <span class="math display">\[B = \text{households} &gt; 1000\]</span></p>
-<div id="82248a31" class="cell" data-execution_count="5">
+<div id="78a40124" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="co"># P(B|A) = P(A &amp; B) / P(A),</span></span>
 <span id="cb4-2"><a href=""></a><span class="co"># B = population &gt; 1000</span></span>
 <span id="cb4-3"><a href=""></a><span class="co"># A = households &gt; 3000</span></span>
@@ -375,7 +375,7 @@ P(B | A) ≈ 0.2824 or 28.24%</code></pre>
 </section>
 <section id="d-jointplot-distribution-histogram" class="slide level2">
 <h2>2D jointplot distribution histogram</h2>
-<div id="f63122d4" class="cell" data-execution_count="6">
+<div id="6a19f108" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href=""></a><span class="co"># heatmap</span></span>
@@ -387,7 +387,7 @@ P(B | A) ≈ 0.2824 or 28.24%</code></pre>
 <img data-src="code_files/figure-revealjs/cell-7-output-1.svg" class="r-stretch"></section>
 <section id="sample-distribution" class="slide level2">
 <h2>Sample distribution</h2>
-<div id="6a724917" class="cell" data-execution_count="7">
+<div id="1a787397" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href=""></a><span class="bu">vars</span> <span class="op">=</span> s1.describe()</span>
 <span id="cb7-2"><a href=""></a>mean <span class="op">=</span> <span class="bu">vars</span>[<span class="st">'mean'</span>]</span>
 <span id="cb7-3"><a href=""></a></span>
@@ -414,7 +414,7 @@ P(B | A) ≈ 0.2824 or 28.24%</code></pre>
 <section id="confidence-intervalci" class="slide level2">
 <h2>Confidence Interval(CI)</h2>
 <p><span class="math display">\[\text{CI} = \bar{x} \pm Z_{\frac{a}{2}} \cdot \frac{\sigma}{\sqrt{n}}\]</span></p>
-<div id="ff759104" class="cell" data-execution_count="8">
+<div id="e435d700" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href=""></a><span class="co"># CI = x_hat +- z * (s / sqrt(n))</span></span>
 <span id="cb9-2"><a href=""></a>s <span class="op">=</span> s1.sample(n<span class="op">=</span><span class="dv">100</span>)</span>
 <span id="cb9-3"><a href=""></a>confidence <span class="op">=</span> <span class="fl">.95</span></span>
@@ -441,8 +441,8 @@ CI: (363.0, 532.0)</code></pre>
 </section>
 <section id="null-hypothesis-testing" class="slide level2">
 <h2>Null hypothesis testing</h2>
-<p>Hypothesis testing that the mean of population is larger than ~427 <span class="math display">\[H_0 : \mu = \mu_0 \approx 427, H_a : \mu &gt; \mu_0\]</span> <span class="math display">\[\text{P-value} : \mu &gt; \mu_0 = P\left(Z\geq z\right) = 1 - \Phi(z)\]</span> <span class="math display">\[Z = \frac{\bar{x} - \mu_0}{{\sigma} \mathbin{/} {\sqrt{n}}}\]</span></p>
-<div id="584bfeb0" class="cell" data-execution_count="9">
+<p>Hypothesis testing that the mean of population is less than ~427 <span class="math display">\[H_0 : \mu = \mu_0 \approx 427, H_a : \mu &gt; \mu_0\]</span> <span class="math display">\[\text{P-value} : \mu &gt; \mu_0 = P\left(Z\geq z\right) = 1 - \Phi(z)\]</span> <span class="math display">\[Z = \frac{\bar{x} - \mu_0}{{\sigma} \mathbin{/} {\sqrt{n}}}\]</span></p>
+<div id="b23657d4" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href=""></a><span class="co"># h_0 = mu = mu_0vmin=50, vmax=100</span></span>
 <span id="cb11-2"><a href=""></a><span class="co"># h_a mu &gt; mu_0</span></span>
 <span id="cb11-3"><a href=""></a>mu_0 <span class="op">=</span> <span class="dv">427</span></span>
@@ -471,7 +471,7 @@ CI: (363.0, 532.0)</code></pre>
 </section>
 <section id="multivariate-matrix-and-correlation" class="slide level2">
 <h2>Multivariate matrix and Correlation</h2>
-<div id="90cbd64a" class="cell columns column-output-location" data-execution_count="10">
+<div id="8b03b051" class="cell columns column-output-location" data-execution_count="10">
 <div class="column">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href=""></a>corr <span class="op">=</span> (dataset_full.drop([<span class="st">'ocean_proximity'</span>], axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb13-2"><a href=""></a>       .corr())</span>
@@ -493,7 +493,7 @@ CI: (363.0, 532.0)</code></pre>
 <section id="line-regression-and-prediction-slope" class="slide level2">
 <h2>Line regression and prediction (slope)</h2>
 <p><span class="math display">\[\hat{y} = \beta_0 + \beta_1 x\]</span> <span class="math display">\[\beta_0 = b ,\text{y-intercept}\]</span> <span class="math display">\[\beta_1 = m ,\text{slope}\]</span></p>
-<div id="3cad2bad" class="cell" data-execution_count="11">
+<div id="b5e2acd6" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href=""></a>res <span class="op">=</span> stats.linregress(dataset[<span class="st">'population'</span>], dataset[<span class="st">'households'</span>])</span>
 <span id="cb14-2"><a href=""></a><span class="bu">print</span>(<span class="ss">f"""</span><span class="op">\</span></span>
 <span id="cb14-3"><a href=""></a><span class="ss">Slope: </span><span class="sc">{</span>res<span class="sc">.</span>slope<span class="sc">:.10f}</span></span>
@@ -511,7 +511,7 @@ R^2: 0.72</code></pre>
 </section>
 <section id="line-regression-and-prediction-scatterplot" class="slide level2">
 <h2>Line regression and prediction (scatterplot)</h2>
-<div id="1868c6c0" class="cell" data-execution_count="12">
+<div id="a0e938e5" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href=""></a>y_real <span class="op">=</span> pd.Series(dataset[<span class="st">'households'</span>], name<span class="op">=</span><span class="st">"Real value"</span>)</span>
 <span id="cb16-2"><a href=""></a>y_pred <span class="op">=</span> pd.Series(res.slope<span class="op">*</span>dataset[<span class="st">'population'</span>] <span class="op">+</span> res.intercept, name<span class="op">=</span><span class="st">"Predicted from income"</span>)</span>
 <span id="cb16-3"><a href=""></a></span>
