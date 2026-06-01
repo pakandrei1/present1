@@ -25,7 +25,7 @@ import numpy as np
 import scipy.stats as stats
 
 sns.set_theme(style="white", palette="muted")
-wanted_labels = ["median_income", "median_house_value"]
+wanted_labels = ["population", "households"]
 dataset_full = pd.read_csv("./housing.csv")
 dataset = dataset_full.filter(items=wanted_labels)
 
@@ -40,9 +40,9 @@ np.random.seed(3) # seed for determinism
 Dataset Source:
 https://www.kaggle.com/datasets/camnugent/california-housing-prices
 
-Target variable: Median house value (`median_house_value`)
+Target variable: Median households (`households`)
 
-Predictor: Median income (`median_income`)
+Predictor: Median population (`population`)
 
 ## Multivariate variables {.scrollable .smaller}
 
@@ -54,10 +54,10 @@ Predictor: Median income (`median_income`)
 | `housing_median_age` | Median age of a house within a block; a lower number is a newer building |
 | `total_rooms` | Total number of rooms within a block |
 | `total_bedrooms` | Total number of bedrooms within a block |
-| `population` | Total number of people residing within a block |
-| `households` | Total number of households, a group of people residing within a home unit, for a block |
-| __`median_income`__ | Median income for households within a block of houses (measured in tens of thousands of US Dollars) |
-| __`median_house_value`__ | Median house value for households within a block (measured in US Dollars) |
+| __`population`__ | Total number of people residing within a block |
+| __`households`__ | Total number of households, a group of people residing within a home unit, for a block |
+| `median_income`__ | Median income for households within a block of houses (measured in tens of thousands of US Dollars) |
+| `median_house_value` | Median house value for households within a block (measured in US Dollars) |
 | `ocean_proximity` | Location of the house w.r.t ocean/sea |
 :::
 ## Boxplots
@@ -65,7 +65,7 @@ Removing outliers (Anything beyond 1.5*IQR)
 ```{python}
 #| output-location: slide
 # Boxplot of dataset before and after removing outliers
-s1 = pd.Series(dataset['median_house_value'],
+s1 = pd.Series(dataset['households'],
                name='Before')
 
 q1 = s1.quantile(.25)
@@ -92,7 +92,7 @@ dataset = dataset[~outliers]
 
 ```{python}
 # pdf and histplot
-s1 = dataset['median_house_value']
+s1 = dataset['households']
 vars = s1.describe()
 g = sns.histplot(data=s1, stat='density',label='samples')
 
@@ -117,17 +117,17 @@ sns.lineplot(x=x,y=cdf)
 
 ## Conditional Probability
 $$P\left(B | A\right) = P\left(A \cap B\right) | P\left(A\right)$$
-$$A = \text{income} > 100 , 000$$
-$$B = \text{median house value} > 300 , 000$$
+$$A = \text{population} > 3000$$
+$$B = \text{households} > 1000$$
 ```{python}
 #| scrolled: false
 # P(B|A) = P(A & B) / P(A),
-# B = median_income > 10(100,000 US$),
-# A = median_house_value > 300,000(US$)
+# B = population > 1000
+# A = households > 3000
 
 df1 = dataset
-a = df1["median_income"] > 5
-b = df1["median_house_value"] > 300_000
+a = df1["population"] > 3000
+b = df1["households"] > 1000
 
 cond = (a & b).sum() / a.sum()
 print(f"A = {a.sum()}, B = {b.sum()}")
@@ -140,7 +140,7 @@ print(f"P(B | A) ≈ {cond:.4f} or {cond * 100:.2f}%")
 #| output-location: default
 #| code-fold: true
 # heatmap
-sns.jointplot(data=dataset, x="median_house_value", y="median_income",
+sns.jointplot(data=dataset, x="households", y="population",
               bins=50, kind='hist')
 ```
 
@@ -181,13 +181,14 @@ CI: ({ci.min()}, {ci.max()})\
 ```
 
 ## Null hypothesis testing
-$$H_0 : \mu = \mu_0 \approx 191409$$
+Hypothesis testing that the mean of population is larger than ~427
+$$H_0 : \mu = \mu_0 \approx 427$$
 $$H_a : \mu > \mu_0$$
 $$Z = \frac{\bar{x} - \mu_0}{\frac{\sigma}{\sqrt{n}}}$$
 ```{python}
 # h_0 = mu = mu_0vmin=50, vmax=100
 # h_a mu > mu_0
-mu_0 = s1.sample(n=1000).mean()
+mu_0 = 427
 vars = s1.describe()
 
 z = (vars['mean'] - mu_0) / (vars['std']  / np.sqrt(s1.size))
@@ -196,7 +197,7 @@ phi = stats.norm.cdf(abs(z))
 p_value = 2 * (1 - phi)
 
 confidence_level = 0.05
-print(f"With p value = {p_value:2f} at {confidence_level * 100}% confidence level:")
+print(f"With p value = {p_value:2f} at confidence_level({confidence_level * 100}%) confidence level:")
 
 print("\t", end="")
 if p_value < confidence_level:
@@ -225,7 +226,7 @@ $$\beta_0 = b ,\text{y-intercept}$$
 $$\beta_1 = m ,\text{slope}$$
 
 ```{python}
-res = stats.linregress(dataset['median_income'], dataset['median_house_value'])
+res = stats.linregress(dataset['population'], dataset['households'])
 print(f"""\
 Slope: {res.slope:.10f}
 Intercept: {res.intercept:.2f}
@@ -236,14 +237,14 @@ R^2: {res.rvalue ** 2:.2f}\
 ## Line regression and prediction (scatterplot & line)
 ```{python}
 #| output-location: slide
-y_real = pd.Series(dataset['median_house_value'], name="Real value")
-y_pred = pd.Series(res.slope*dataset['median_income'] + res.intercept, name="Predicted from income")
+y_real = pd.Series(dataset['households'], name="Real value")
+y_pred = pd.Series(res.slope*dataset['population'] + res.intercept, name="Predicted from income")
 
 min = np.array([y_real.min(), y_pred.min()]).min()
 max = np.array([y_real.max(), y_pred.max()]).max()
 
 # little bit redundant, because r was calculated in cell above
-r, p = stats.pearsonr(dataset['median_income'], dataset['median_house_value'])
+r, p = stats.pearsonr(dataset['population'], dataset['households'])
 print(f"Correlation: r = {r}")
 g = sns.scatterplot(x=y_real, y=y_pred,
                     alpha=0.4,color="0.4",edgecolor="w")
