@@ -184,7 +184,7 @@ CI: ({ci.min()}, {ci.max()})\
 Hypothesis testing that the mean of population is larger than ~427
 $$H_0 : \mu = \mu_0 \approx 427$$
 $$H_a : \mu > \mu_0$$
-$$Z = \frac{\bar{x} - \mu_0}{\frac{\sigma}{\sqrt{n}}}$$
+$$Z = \frac{\bar{x} - \mu_0}{{\sigma} \mathbin{/} {\sqrt{n}}}$$
 ```{python}
 # h_0 = mu = mu_0vmin=50, vmax=100
 # h_a mu > mu_0
@@ -220,7 +220,7 @@ sns.heatmap(corr, mask=mask,
             cmap=cmap, center=0, square=True)
 ```
 
-## Line regression and prediction (Slope)
+## Line regression and prediction (slope)
 $$\hat{y} = \beta_0 + \beta_1 x$$
 $$\beta_0 = b ,\text{y-intercept}$$
 $$\beta_1 = m ,\text{slope}$$
@@ -234,7 +234,7 @@ R^2: {res.rvalue ** 2:.2f}\
 """)
 ```
 
-## Line regression and prediction (scatterplot & line)
+## Line regression and prediction (scatterplot)
 ```{python}
 #| output-location: slide
 y_real = pd.Series(dataset['households'], name="Real value")
