@@ -1,0 +1,252 @@
+---
+title: Probabilities and Statistics Term Project
+jupyter: python3
+format:
+  revealjs:
+    mainfont: "ETBembo"
+    monofont: "Berkeley Mono"
+    fontsize: 2.2em
+    css: styles.css
+execute: 
+  echo: true
+output-location: fragment
+smaller: true
+fig-format: svg
+---
+
+```{python}
+#| include: false
+import pandas as pd
+from pandas import DataFrame as df
+import matplotlib.pyplot as plt
+import seaborn as sns
+import seaborn.objects as so
+import numpy as np
+import scipy.stats as stats
+
+sns.set_theme(style="white", palette="muted")
+wanted_labels = ["median_income", "median_house_value"]
+dataset_full = pd.read_csv("./housing.csv")
+dataset = dataset_full.filter(items=wanted_labels)
+
+np.random.seed(3) # seed for determinism
+```
+
+## Dataset: California Housing prices
+### Student ID: 26013429
+### Full Name: Pak Andrei
+
+
+Dataset Source:
+https://www.kaggle.com/datasets/camnugent/california-housing-prices
+
+Target variable: Median house value (`median_house_value`)
+
+Predictor: Median income (`median_income`)
+
+## Multivariate variables {.scrollable .smaller}
+
+:::{style="font-size: 0.7em;"}
+| Variable name | Description |
+| --- | --- |
+| `longitude` | A measure of how far west a house is; a higher value is farther west |
+| `latitude` | A measure of how far north a house is; a higher value is farther north |
+| `housing_median_age` | Median age of a house within a block; a lower number is a newer building |
+| `total_rooms` | Total number of rooms within a block |
+| `total_bedrooms` | Total number of bedrooms within a block |
+| `population` | Total number of people residing within a block |
+| `households` | Total number of households, a group of people residing within a home unit, for a block |
+| __`median_income`__ | Median income for households within a block of houses (measured in tens of thousands of US Dollars) |
+| __`median_house_value`__ | Median house value for households within a block (measured in US Dollars) |
+| `ocean_proximity` | Location of the house w.r.t ocean/sea |
+:::
+## Boxplots
+Removing outliers (Anything beyond 1.5*IQR)
+```{python}
+#| output-location: slide
+# Boxplot of dataset before and after removing outliers
+s1 = pd.Series(dataset['median_house_value'],
+               name='Before')
+
+q1 = s1.quantile(.25)
+q3 = s1.quantile(.75)
+iqr = q3 - q1
+
+lower = q1 - 1.5 * iqr
+upper = q3 + 1.5 * iqr
+outliers = (s1 < lower) | (s1 > upper)
+
+s2 = pd.Series(s1[~outliers], name='After')
+
+df1 = pd.concat([s1, s2],axis=1)
+sns.boxplot(df1, orient='v', order=['Before'],
+            width=0.4)
+sns.boxplot(df1, orient='v', order=['After'],
+            width=0.4, whis=[0, 100])
+
+# set clean data for future cells
+dataset = dataset[~outliers]
+```
+
+## Histogram & Normal PDF
+
+```{python}
+# pdf and histplot
+s1 = dataset['median_house_value']
+vars = s1.describe()
+g = sns.histplot(data=s1, stat='density',label='samples')
+
+x = np.linspace(vars['min'], vars['max'])
+y = stats.norm.pdf(x, vars['mean'], vars['std'])
+
+g.plot(x, y, 'r', lw=2, label='pdf')
+g.legend()
+```
+
+## CDF
+
+```{python}
+# cdf
+x, counts = np.unique(s1, return_counts=True, sorted=True)
+events = np.cumsum(counts)
+n = s1.size
+cdf = events / n
+
+sns.lineplot(x=x,y=cdf)
+```
+
+## Conditional Probability
+$$P\left(B | A\right) = P\left(A \cap B\right) | P\left(A\right)$$
+$$A = \text{income} > 100 , 000$$
+$$B = \text{median house value} > 300 , 000$$
+```{python}
+#| scrolled: false
+# P(B|A) = P(A & B) / P(A),
+# B = median_income > 10(100,000 US$),
+# A = median_house_value > 300,000(US$)
+
+df1 = dataset
+a = df1["median_income"] > 5
+b = df1["median_house_value"] > 300_000
+
+cond = (a & b).sum() / a.sum()
+print(f"A = {a.sum()}, B = {b.sum()}")
+print(f"(A & B) = {(a & b).sum()}")
+print(f"P(B | A) ≈ {cond:.4f} or {cond * 100:.2f}%")
+```
+
+## 2D jointplot distribution histogram
+```{python}
+#| output-location: default
+#| code-fold: true
+# heatmap
+sns.jointplot(data=dataset, x="median_house_value", y="median_income",
+              bins=50, kind='hist')
+```
+
+## Sample distribution
+
+```{python}
+vars = s1.describe()
+mean = vars['mean']
+
+# averages of 1000 random n=50 samples
+sample_means = np.array([s1.sample(n=50, replace=True).mean()
+                for _ in range(1000)])
+
+sns.histplot(sample_means)
+print(f"Mean: {sample_means.mean()}")
+```
+
+## Confidence Interval(CI)
+$$\text{CI} = \bar{x} \pm Z_{\frac{a}{2}} \cdot \frac{\sigma}{\sqrt{n}}$$
+
+```{python}
+# CI = x_hat +- z * (s / sqrt(n))
+s = s1.sample(n=100)
+confidence = .95
+alpha = 1 - confidence
+
+z = stats.norm.ppf(1 - alpha / 2)
+
+lower = s.mean() - (z * s / np.sqrt(s.size))
+upper = s.mean() + (z * s / np.sqrt(s.size))
+
+ci = s[(s > lower) & (s < upper)]
+
+print(f"""\
+Confidence: {confidence * 100}%
+CI: ({ci.min()}, {ci.max()})\
+""")
+```
+
+## Null hypothesis testing
+$$H_0 : \mu = \mu_0 \approx 191409$$
+$$H_a : \mu > \mu_0$$
+$$Z = \frac{\bar{x} - \mu_0}{\frac{\sigma}{\sqrt{n}}}$$
+```{python}
+# h_0 = mu = mu_0vmin=50, vmax=100
+# h_a mu > mu_0
+mu_0 = s1.sample(n=1000).mean()
+vars = s1.describe()
+
+z = (vars['mean'] - mu_0) / (vars['std']  / np.sqrt(s1.size))
+
+phi = stats.norm.cdf(abs(z))
+p_value = 2 * (1 - phi)
+
+confidence_level = 0.05
+print(f"With p value = {p_value:2f} at {confidence_level * 100}% confidence level:")
+
+print("\t", end="")
+if p_value < confidence_level:
+    print("Reject H_0")
+else:
+    print("Fail to reject H_0")
+```
+
+## Multivariate matrix and Correlation
+
+```{python}
+#| output-location: column
+
+corr = (dataset_full.drop(['ocean_proximity'], axis=1)
+       .corr())
+mask = np.triu(np.ones_like(corr, dtype=bool))
+cmap = sns.diverging_palette(20, 150, as_cmap=True)
+
+sns.heatmap(corr, mask=mask,
+            cmap=cmap, center=0, square=True)
+```
+
+## Line regression and prediction (Slope)
+$$\hat{y} = \beta_0 + \beta_1 x$$
+$$\beta_0 = b ,\text{y-intercept}$$
+$$\beta_1 = m ,\text{slope}$$
+
+```{python}
+res = stats.linregress(dataset['median_income'], dataset['median_house_value'])
+print(f"""\
+Slope: {res.slope:.10f}
+Intercept: {res.intercept:.2f}
+R^2: {res.rvalue ** 2:.2f}\
+""")
+```
+
+## Line regression and prediction (scatterplot & line)
+```{python}
+#| output-location: slide
+y_real = pd.Series(dataset['median_house_value'], name="Real value")
+y_pred = pd.Series(res.slope*dataset['median_income'] + res.intercept, name="Predicted from income")
+
+min = np.array([y_real.min(), y_pred.min()]).min()
+max = np.array([y_real.max(), y_pred.max()]).max()
+
+# little bit redundant, because r was calculated in cell above
+r, p = stats.pearsonr(dataset['median_income'], dataset['median_house_value'])
+print(f"Correlation: r = {r}")
+g = sns.scatterplot(x=y_real, y=y_pred,
+                    alpha=0.4,color="0.4",edgecolor="w")
+g.plot([min, max], [min, max], color='r')
+```
+

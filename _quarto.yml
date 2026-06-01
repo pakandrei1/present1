@@ -1,0 +1,10 @@
+project:
+  render:
+    - "*.ipynb"
+
+format:
+  revealjs:
+    smaller: true
+    scrollable: true
+
+
